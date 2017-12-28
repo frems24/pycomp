@@ -9,13 +9,62 @@ def main():
     """ Główna funkcja programu. """
 
     # Przygotowanie informacji o statystyce słów w pliku
-    file_name = sys.argv[1]
+    src_file_name = sys.argv[1]
     words_dict = {}  # słownik {wyraz: [ilość wystąpień, długość]}
 
-    with open(file_name, 'r') as input_file:
+    with open(src_file_name, 'r') as input_file:
         for line in input_file:
             update_words_dict(line.rstrip(), words_dict, 2, 3)
 
+    header_list = create_header(words_dict)
+
+    # Zapisanie nagłówka w docelowym pliku
+    spec_char = '@'
+    dst_file_name = src_file_name + '.dcmp'
+    header_str = ''
+    for word in header_list:
+        word_sep = word + ' '
+        header_str += word_sep
+    header = spec_char + ' ' + header_str + spec_char + ' '
+
+    with open(dst_file_name, 'w') as output_file:
+        output_file.write(header)
+    # Kompresja pliku
+    print("Gotowe.")
+
+
+def update_words_dict(line, words_dict, min_repetitions, min_length):
+    """
+    Uaktualnie słownik 'words': jeśli nie ma w nim słowa to dopisuje, jeśli jest to zwiększa liczbę wystąpień.
+    :param line: line: wiersz z pliku ze słowami
+    :param words_dict: words_dict: słownik do uaktualnienia
+    :param min_repetitions: minimalna wymagana ilość powtórzeń wyrazu
+    :param min_length: minimalna wymagana długość wyrazu
+    :return: uaktualniony słownik 'words' (w miejscu)
+    """
+    delimiters = ". , ; : ? $ @ ^ < > # % ` ! * - = ( ) [ ] { } / \" '".split()
+
+    for sign in delimiters:
+        line = line.replace(sign, " ")
+
+    for word in line.split():
+        if word in words_dict:
+            words_dict[word][0] += 1
+        else:
+            if len(word) >= min_length:
+                words_dict[word] = [1, len(word)]
+
+    for word in words_dict.copy():
+        if words_dict[word][0] < min_repetitions:
+            words_dict.pop(word)
+
+
+def create_header(words_dict):
+    """
+    Utworzenie odpowiednio ułożonej listy z wyrazami do nagłówka.
+    :param words_dict: słownik z wyrazami zebranymi z pliku źródłowego
+    :return: lista przeznaczona do nagłówka pliku
+    """
     # Utworzenie posortowanej listy słów
     words_sorted_list = sorted(words_dict.items(), key=itemgetter(1), reverse=True)
     words_total = len(words_sorted_list)
@@ -45,43 +94,7 @@ def main():
             dst_words_index += 1
         src_words_index += 1
 
-    header_list = words_0_to_9 + words_10_to_99 + words_100_to_999
-    for n, word in enumerate(header_list):
-        print("%s " % word, end='')
-
-    print("\ntotal: %d" % words_total)
-    print("dst: %d" % dst_words_index)
-    print("src: %d" % src_words_index)
-
-    # Zapisanie nagłówka w docelowym pliku
-    # Kompresja pliku
-    print("Gotowe.")
-
-
-def update_words_dict(line, words_dict, min_repetitions, min_length):
-    """
-    Uaktualnie słownik 'words': jeśli nie ma w nim słowa to dopisuje, jeśli jest to zwiększa liczbę wystąpień.
-    :param line: line: wiersz z pliku ze słowami
-    :param words_dict: words_dict: słownik do uaktualnienia
-    :param min_repetitions: minimalna wymagana ilość powtórzeń wyrazu
-    :param min_length: minimalna wymagana długość wyrazu
-    :return: uaktualniony słownik 'words' (w miejscu)
-    """
-    delimiters = ". , ; : ? $ @ ^ < > # % ` ! * - = ( ) [ ] { } / \" '".split()
-
-    for sign in delimiters:
-        line = line.replace(sign, " ")
-
-    for word in line.split():
-        if word in words_dict:
-            words_dict[word][0] += 1
-        else:
-            if len(word) >= min_length:
-                words_dict[word] = [1, len(word)]
-
-    for word in words_dict.copy():
-        if words_dict[word][0] < min_repetitions:
-            words_dict.pop(word)
+    return words_0_to_9 + words_10_to_99 + words_100_to_999
 
 
 if __name__ == '__main__':
