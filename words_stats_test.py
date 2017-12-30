@@ -1,5 +1,5 @@
 # words_stats_test.py -- pokazuje zawartość nagłówka do programu pycomp.py
-# wersja 1.0
+# wersja 1.1
 
 import sys
 from operator import itemgetter
@@ -32,36 +32,67 @@ def main():
     print("idx       słowo      il. wyst  długość")
     words_0_to_9 = []
     while dst_words_index < 10 and src_words_index < words_total:
-        if words_sorted_list[src_words_index][1][1] > 2:
-            words_0_to_9.append(words_sorted_list[src_words_index])
-            dst_words_index += 1
+        word_length = words_sorted_list[src_words_index][1][1]
+        if word_length > 2:
+            word_saved_space = word_length - 2
+            word_dict_space = word_length + 1
+            word_repeat = words_sorted_list[src_words_index][1][0]
+            if word_saved_space * word_repeat > word_dict_space:
+                words_0_to_9.append(words_sorted_list[src_words_index])
+                dst_words_index += 1
         src_words_index += 1
 
     print("\nIlość słów na miejscach 0-9: %d\n" % len(words_0_to_9))
     for n, (word, stats) in enumerate(words_0_to_9):
-        print("%3d%13s\t%d\t%d" % (n, word, stats[0], stats[1]))
+        print("%4d%13s\t%d\t%d" % (n, word, stats[0], stats[1]))
 
     words_10_to_99 = []
     while dst_words_index < 100 and src_words_index < words_total:
-        if words_sorted_list[src_words_index][1][1] > 3:
-            words_10_to_99.append(words_sorted_list[src_words_index])
-            dst_words_index += 1
+        word_length = words_sorted_list[src_words_index][1][1]
+        if word_length > 3:
+            word_saved_space = word_length - 3
+            word_dict_space = word_length + 1
+            word_repeat = words_sorted_list[src_words_index][1][0]
+            if word_saved_space * word_repeat > word_dict_space:
+                words_10_to_99.append(words_sorted_list[src_words_index])
+                dst_words_index += 1
         src_words_index += 1
 
     print("\nIlość słów na miejscach 10-99: %d\n" % len(words_10_to_99))
     for n, (word, stats) in enumerate(words_10_to_99):
-        print("%3d%13s\t%d\t%d" % (n + 10, word, stats[0], stats[1]))
+        print("%4d%13s\t%d\t%d" % (n + 10, word, stats[0], stats[1]))
 
     words_100_to_999 = []
     while dst_words_index < 1000 and src_words_index < words_total:
-        if words_sorted_list[src_words_index][1][1] > 4:
-            words_100_to_999.append(words_sorted_list[src_words_index])
-            dst_words_index += 1
+        word_length = words_sorted_list[src_words_index][1][1]
+        if word_length > 4:
+            word_saved_space = word_length - 4
+            word_dict_space = word_length + 1
+            word_repeat = words_sorted_list[src_words_index][1][0]
+            if word_saved_space * word_repeat > word_dict_space:
+                words_100_to_999.append(words_sorted_list[src_words_index])
+                dst_words_index += 1
         src_words_index += 1
 
     print("\nIlość słów na miejscach 100-999: %d\n" % len(words_100_to_999))
-    for n, (word, stats) in enumerate(words_100_to_999):
-        print("%3d%13s\t%d\t%d" % (n + 100, word, stats[0], stats[1]))
+    # for n, (word, stats) in enumerate(words_100_to_999):
+    #     print("%4d%13s\t%d\t%d" % (n + 100, word, stats[0], stats[1]))
+
+    words_1000_to_9999 = []
+    while dst_words_index < 10000 and src_words_index < words_total:
+        word_length = words_sorted_list[src_words_index][1][1]
+        if word_length > 5:
+            word_saved_space = word_length - 5
+            word_dict_space = word_length + 1
+            word_repeat = words_sorted_list[src_words_index][1][0]
+            if word_saved_space * word_repeat > word_dict_space:
+                words_1000_to_9999.append(words_sorted_list[src_words_index])
+                dst_words_index += 1
+        src_words_index += 1
+
+    print("\nIlość słów na miejscach 1000-9999: %d\n" % len(words_1000_to_9999))
+    for n, (word, stats) in enumerate(words_1000_to_9999):
+        print("%4d%13s\t%d\t%d" % (n + 1000, word, stats[0], stats[1]))
 
     print("\nCałkowita ilość słów: %d" % words_total)
     print("dst: %d" % dst_words_index)
