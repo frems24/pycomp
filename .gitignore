@@ -1,0 +1,6 @@
+*.txt
+*.dcmp
+Pip*
+stats*
+.DS*
+.idea/
