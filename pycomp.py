@@ -1,5 +1,5 @@
 # pycomp.py -- kompresuje pliki tekstowe metodą słownikową
-# wersja 1.1
+# wersja 1.2
 
 import os
 import sys
@@ -12,10 +12,11 @@ def main():
     # Przygotowanie informacji o statystyce słów w pliku
     src_file_name = sys.argv[1]
     words_dict = {}             # słownik {wyraz: [ilość wystąpień, długość]}
+    spec_char = '@'
 
     with open(src_file_name, 'r') as input_file:
         for line in input_file:
-            update_words_dict(line.rstrip(), words_dict, 3)
+            update_words_dict(line.rstrip(), words_dict, spec_char)
 
     min_repetitions = 2
     for word in words_dict.copy():
@@ -29,7 +30,6 @@ def main():
         header_dict[word] = index
 
     # Przygotowanie nagłówka w docelowym pliku
-    spec_char = '@'
     header_str = ''
     for word in header_list:
         word_sep = word + ' '
@@ -52,23 +52,21 @@ def main():
     print(f'{src_file_name:15} compression ratio: {comp_ratio:>5.1%}')
 
 
-def update_words_dict(line, words_dict, min_length):
+def update_words_dict(line, words_dict, spec_char):
     """
     Uaktualnie słownik 'words': jeśli nie ma w nim słowa to dopisuje, jeśli jest to zwiększa liczbę wystąpień.
     :param line: line: wiersz z pliku ze słowami
     :param words_dict: words_dict: słownik do uaktualnienia
-    :param min_length: minimalna wymagana długość wyrazu
+    :param spec_char: przyjęty znak specjalny
     :return: uaktualniony słownik 'words' (w miejscu)
     """
-    delimiters = ". , ; : ? $ @ ^ < > # % ` ! * - = ( ) [ ] { } / \" '".split()
-    for sign in delimiters:
-        line = line.replace(sign, " ")
+    min_length = 2
 
     for word in line.split():
         if word in words_dict:
             words_dict[word][0] += 1
         else:
-            if len(word) >= min_length:
+            if len(word) >= min_length and spec_char not in word:
                 words_dict[word] = [1, len(word)]
 
 
@@ -89,7 +87,7 @@ def create_header(words_dict):
     words_list = []
     while src_word_index < words_total:
         word_length = words_sorted_list[src_word_index][1][1]
-        dst_word_indicator_length = len(str(dst_word_index)) + 1
+        dst_word_indicator_length = len(str(dst_word_index))
         word_saved_space = word_length - dst_word_indicator_length
         word_dict_space = word_length + 1
         word_repeat = words_sorted_list[src_word_index][1][0]
@@ -114,16 +112,17 @@ def create_output_line(input_line, header_dict, spec_char):
     one_word = ''
     for char in input_line:
         word_outside = True
-        if char.isalpha():
+        if char.isprintable() and not char.isspace():
             one_word += char
+            if char == spec_char:
+                one_word += spec_char
             word_outside = False
 
         if word_outside:
             if one_word in header_dict:
                 one_word = spec_char + str(header_dict[one_word])
+                output_line = output_line[:-1]
             output_line += one_word
-            if char == spec_char:
-                output_line += spec_char
             output_line += char
             one_word = ''
 
