@@ -83,58 +83,22 @@ def create_header(words_dict):
     words_total = len(words_sorted_list)
 
     # Utworzenie listy słów dla nagłówka
-    dst_words_index = 0
-    src_words_index = 0
+    dst_word_index = 0
+    src_word_index = 0
 
-    words_0_to_9 = []
-    while dst_words_index < 10 and src_words_index < words_total:
-        word_length = words_sorted_list[src_words_index][1][1]
-        if word_length > 2:
-            word_saved_space = word_length - 2
-            word_dict_space = word_length + 1
-            word_repeat = words_sorted_list[src_words_index][1][0]
-            if word_saved_space * word_repeat > word_dict_space:
-                words_0_to_9.append(words_sorted_list[src_words_index][0])
-                dst_words_index += 1
-        src_words_index += 1
+    words_list = []
+    while src_word_index < words_total:
+        word_length = words_sorted_list[src_word_index][1][1]
+        dst_word_indicator_length = len(str(dst_word_index)) + 1
+        word_saved_space = word_length - dst_word_indicator_length
+        word_dict_space = word_length + 1
+        word_repeat = words_sorted_list[src_word_index][1][0]
+        if word_saved_space * word_repeat > word_dict_space:
+            words_list.append(words_sorted_list[src_word_index][0])
+            dst_word_index += 1
+        src_word_index += 1
 
-    words_10_to_99 = []
-    while dst_words_index < 100 and src_words_index < words_total:
-        word_length = words_sorted_list[src_words_index][1][1]
-        if word_length > 3:
-            word_saved_space = word_length - 3
-            word_dict_space = word_length + 1
-            word_repeat = words_sorted_list[src_words_index][1][0]
-            if word_saved_space * word_repeat > word_dict_space:
-                words_10_to_99.append(words_sorted_list[src_words_index][0])
-                dst_words_index += 1
-        src_words_index += 1
-
-    words_100_to_999 = []
-    while dst_words_index < 1000 and src_words_index < words_total:
-        word_length = words_sorted_list[src_words_index][1][1]
-        if word_length > 4:
-            word_saved_space = word_length - 4
-            word_dict_space = word_length + 1
-            word_repeat = words_sorted_list[src_words_index][1][0]
-            if word_saved_space * word_repeat > word_dict_space:
-                words_100_to_999.append(words_sorted_list[src_words_index][0])
-                dst_words_index += 1
-        src_words_index += 1
-
-    words_1000_to_9999 = []
-    while dst_words_index < 10000 and src_words_index < words_total:
-        word_length = words_sorted_list[src_words_index][1][1]
-        if word_length > 5:
-            word_saved_space = word_length - 5
-            word_dict_space = word_length + 1
-            word_repeat = words_sorted_list[src_words_index][1][0]
-            if word_saved_space * word_repeat > word_dict_space:
-                words_1000_to_9999.append(words_sorted_list[src_words_index][0])
-                dst_words_index += 1
-        src_words_index += 1
-
-    return words_0_to_9 + words_10_to_99 + words_100_to_999 + words_1000_to_9999
+    return words_list
 
 
 def create_output_line(input_line, header_dict, spec_char):
