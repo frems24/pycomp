@@ -1,8 +1,9 @@
 # words_stats_test.py -- pokazuje zawartość nagłówka do programu pycomp.py
-# wersja 1.2
+# wersja 1.3
 
 import sys
 from operator import itemgetter
+from num62lib import num_to_num62
 
 
 def main():
@@ -33,8 +34,8 @@ def main():
     words_list = []
     while src_word_index < words_total:
         word_length = words_sorted_list[src_word_index][1][1]
-        dst_word_indicator_length = len(str(dst_word_index))
-        word_saved_space = word_length - dst_word_indicator_length
+        dst_word_indicator_length_62 = len(num_to_num62(dst_word_index))
+        word_saved_space = word_length - dst_word_indicator_length_62
         word_dict_space = word_length + 1
         word_repeat = words_sorted_list[src_word_index][1][0]
         if word_saved_space * word_repeat > word_dict_space:
@@ -43,9 +44,10 @@ def main():
         src_word_index += 1
 
     num_of_spec = 0
-    print("idx       słowo      il. wyst  długość")
+    print("idx        słowo      il. wyst  długość")
     for n, (word, stats) in enumerate(words_list):
-        print("%4d%20s\t%d\t%d" % (n, word, stats[0], stats[1]))
+        n_62 = num_to_num62(n)
+        print("%3s%18s\t%d\t%d" % (n_62, word, stats[0], stats[1]))
         num_of_spec += stats[0]
 
     print(f"\nIlość wystąpień '@' w pliku: {num_of_spec}")
@@ -66,11 +68,12 @@ def update_words_dict(line, words_dict, spec_char):
     """
     min_length = 2
 
+    line = line.replace(spec_char, ' ')
     for word in line.split():
         if word in words_dict:
             words_dict[word][0] += 1
         else:
-            if len(word) >= min_length and spec_char not in word:
+            if len(word) >= min_length:
                 words_dict[word] = [1, len(word)]
 
 

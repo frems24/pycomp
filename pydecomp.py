@@ -1,7 +1,8 @@
 # pydecomp.py -- dekompresuje pliki tekstowe metodą słownikową
-# wersja 1.2
+# wersja 1.3
 
 import sys
+from num62lib import num62_to_num
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
             decrypt_list = ''
 
         if decrypt_list:
-            dst_file_name = src_file_name[:-9] + '_decomp.txt'
+            dst_file_name = src_file_name[:-9] + '.d.txt'
             # Dekompresja pliku
             with open(dst_file_name, 'w') as output_file:
                 decompress(input_file, output_file, decrypt_list, spec_char)
@@ -45,7 +46,7 @@ def decompress(input_file, output_file, decrypt_list, spec_char):
     index = ''
     spec_word_inside = False
     spec_char_after_index = False
-    inside_number = False
+    inside_index = False
     new_line = True
     line_beginning = False
 
@@ -64,26 +65,27 @@ def decompress(input_file, output_file, decrypt_list, spec_char):
 
         if spec_word_inside:
             if char == spec_char:
-                if not inside_number:
+                if not inside_index:
                     one_word = char
                     spec_word_inside = False
                     second_spec_char = True
                 else:
                     spec_char_after_index = True
                     char = ''
-            if char.isdigit():
+            if char.isalnum():
                 index += char
                 word_outside = False
-                inside_number = True
+                inside_index = True
             else:
-                inside_number = False
+                inside_index = False
 
         if spec_word_inside and word_outside:
+            word_found = decrypt_list[num62_to_num(index)]
             if line_beginning:
-                one_word = decrypt_list[int(index)] + char
+                one_word = word_found + char
                 line_beginning = False
             else:
-                one_word = ' ' + decrypt_list[int(index)] + char
+                one_word = ' ' + word_found + char
             spec_word_inside = False
             index = ''
 
@@ -96,7 +98,7 @@ def decompress(input_file, output_file, decrypt_list, spec_char):
             output_file.write(one_word)
             one_word = ''
 
-        if char == '\n':
+        if char == '\n' or char == spec_char:
             new_line = True
         else:
             new_line = False

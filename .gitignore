@@ -4,4 +4,5 @@ Pip*
 stats*
 .DS*
 .idea/
+__pycache__/
 plikWy

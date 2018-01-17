@@ -1,9 +1,10 @@
 # pycomp.py -- kompresuje pliki tekstowe metodą słownikową
-# wersja 1.2
+# wersja 1.3
 
 import os
 import sys
 from operator import itemgetter
+from num62lib import num_to_num62
 
 
 def main():
@@ -62,11 +63,12 @@ def update_words_dict(line, words_dict, spec_char):
     """
     min_length = 2
 
+    line = line.replace(spec_char, ' ')
     for word in line.split():
         if word in words_dict:
             words_dict[word][0] += 1
         else:
-            if len(word) >= min_length and spec_char not in word:
+            if len(word) >= min_length:
                 words_dict[word] = [1, len(word)]
 
 
@@ -87,8 +89,8 @@ def create_header(words_dict):
     words_list = []
     while src_word_index < words_total:
         word_length = words_sorted_list[src_word_index][1][1]
-        dst_word_indicator_length = len(str(dst_word_index))
-        word_saved_space = word_length - dst_word_indicator_length
+        dst_word_indicator_length_62 = len(num_to_num62(dst_word_index))
+        word_saved_space = word_length - dst_word_indicator_length_62
         word_dict_space = word_length + 1
         word_repeat = words_sorted_list[src_word_index][1][0]
         if word_saved_space * word_repeat > word_dict_space:
@@ -110,21 +112,28 @@ def create_output_line(input_line, header_dict, spec_char):
     """
     output_line = ''
     one_word = ''
+    one_word_after_spec_char = False
+
     for char in input_line:
         word_outside = True
-        if char.isprintable() and not char.isspace():
+        if char.isprintable() and not char.isspace() and char != spec_char:
             one_word += char
-            if char == spec_char:
-                one_word += spec_char
             word_outside = False
 
         if word_outside:
             if one_word in header_dict:
-                one_word = spec_char + str(header_dict[one_word])
-                output_line = output_line[:-1]
+                one_word = spec_char + num_to_num62(header_dict[one_word])
+                if not one_word_after_spec_char:
+                    output_line = output_line[:-1]
             output_line += one_word
             output_line += char
+            if char == spec_char:
+                output_line += spec_char
             one_word = ''
+            one_word_after_spec_char = False
+
+        if char == spec_char:
+            one_word_after_spec_char = True
 
     return output_line
 
