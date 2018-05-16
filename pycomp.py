@@ -1,5 +1,5 @@
 # pycomp.py -- kompresuje pliki tekstowe metodą słownikową
-# wersja 1.3
+# wersja 1.3.1
 
 import os
 import sys
@@ -18,17 +18,22 @@ def main():
     with open(src_file_name, 'r') as input_file:
         for line in input_file:
             update_words_dict(line.rstrip(), words_dict, spec_char)
+# for line in open()
 
     min_repetitions = 2
     for word in words_dict.copy():
         if words_dict[word][0] < min_repetitions:
             words_dict.pop(word)
+    # pomysł alternatywny (str. 396):
+    # words_dict = {key: value for (key, value) in words_dict if value[0] >= min_repetitions}
 
     # Przygotowanie listy słów do nagłówka oraz słownika z pozycjami tych słów na liście
     header_list = create_header(words_dict)
     header_dict = {}
     for index, word in enumerate(header_list):
         header_dict[word] = index
+    # pomysł alternatywny (str. 396):
+    # header_dict = {word: index for (index, word) in enumerate(header_list)}
 
     # Przygotowanie nagłówka w docelowym pliku
     header_str = ''
@@ -55,9 +60,9 @@ def main():
 
 def update_words_dict(line, words_dict, spec_char):
     """
-    Uaktualnie słownik 'words': jeśli nie ma w nim słowa to dopisuje, jeśli jest to zwiększa liczbę wystąpień.
-    :param line: line: wiersz z pliku ze słowami
-    :param words_dict: words_dict: słownik do uaktualnienia
+    Uaktualnia słownik 'words': jeśli nie ma w nim słowa to dopisuje, jeśli jest to zwiększa liczbę wystąpień.
+    :param line: wiersz z pliku ze słowami
+    :param words_dict: słownik do uaktualnienia
     :param spec_char: przyjęty znak specjalny
     :return: uaktualniony słownik 'words' (w miejscu)
     """
